@@ -1,36 +1,25 @@
-use std::io;
+use meval::Expr;
+use std::{io, str::FromStr};
 
 fn leer_valores() -> String {
     let mut cambio: String = String::new();
     io::stdin()
         .read_line(&mut cambio)
         .expect("Error al leer la linea");
-    cambio
+    cambio.trim().to_string()
 }
 
 fn main() {
     println!("digite el valor de x");
-    let x: String = leer_valores();
-    // let x: i16 = x.trim().parse().expect("Error");
-    println!("valor de x = {x}");
+    let x: i8 = leer_valores()
+        .parse()
+        .expect("Error al convertir a valor numerico");
 
-    println!("digite la funcion");
-    let mut funcion: String = leer_valores();
-    funcion = funcion.replace('x', &x);
-    println!("funcion = {funcion}");
-    let resultado: i8 = funcion.trim().parse().expect("Error");
+    println!("digite y =");
+    let y: String = leer_valores();
 
-    println!("y = {resultado}");
-
-    /*
-    // f(x) = 2x^3, x = 2
-    //f'(2) = 24
-    let x: f64 = 2.0;
-    let h: f64 = 0.001;
-    let r1: f64 = 2.0 * x.powi(3);
-    let r2: f64 = 2.0 * (2.0 + h).powi(3);
-    let r3: f64 = (r2 - r1) / h;
-
-    println!("resultado derivada = {r3}");
-    */
+    let expresion: Expr = Expr::from_str(&y).expect("Error al analizar la funcion");
+    let funcion = expresion.bind("x").expect("Error al vincular la variable");
+    let resultado: f64 = funcion(x.into());
+    println!("resultado = {:.2e}", resultado);
 }
