@@ -24,7 +24,7 @@ fn derivada_metodo_numerico(resultado_funcion: &f64, y: &String, x: &f64) -> f64
     resultado
 }
 
-fn metodo_newton(x: &f64, resultado_funcion: &f64, resultado_derivada: f64) -> f64 {
+fn metodo_newton(x: &f64, resultado_funcion: &f64, resultado_derivada: &f64) -> f64 {
     x - (resultado_funcion / resultado_derivada)
 }
 
@@ -38,7 +38,7 @@ fn main() {
     let y: String = leer_valores();
 
     let resultado_funcion: f64 = determinar_funcion(&y, x);
-    let derivada: f64 = derivada_metodo_numerico(&resultado_funcion, &y, &x);
-    let resultado: f64 = metodo_newton(&x, &resultado_funcion, derivada);
+    let resultado_derivada: f64 = derivada_metodo_numerico(&resultado_funcion, &y, &x);
+    let resultado: f64 = metodo_newton(&x, &resultado_funcion, &resultado_derivada);
     println!("resultado = {resultado}");
 }
