@@ -14,15 +14,19 @@ fn leer_valores() -> String {
 fn determinar_funcion(y: &String, x: &f64) -> f64 {
     let expresion: Expr = Expr::from_str(y).expect("Error al analizar la funcion");
     let funcion = expresion.bind("x").expect("Error al vincular la variable");
-    funcion(*x)
+    redondear(funcion(*x))
 }
 
 fn derivada_metodo_numerico(f: &f64, f_x_h: &f64) -> f64 {
-    (f_x_h - *f) / H
+    redondear((*f_x_h - *f) / H)
 }
 
-fn metodo_newton(x: &mut f64, f: &f64, f_prima: &f64) {
-    *x -= f / f_prima
+fn metodo_newton(x: &f64, f: &f64, f_prima: &f64) -> f64 {
+    redondear(*x - (*f / *f_prima))
+}
+
+fn redondear(valor: f64) -> f64 {
+    (valor * 10_000.0).round() / 10_000.0
 }
 
 fn main() {
@@ -31,7 +35,8 @@ fn main() {
         .parse()
         .expect("Error al convertir a valor numerico");
 
-    println!("digite la funcion. \n- ejemplo : 2*x^3 + 5 * (2*x - 1)^3 + x^2");
+    println!("digite la funcion. \n- ejemplo : 2*x^3 + 5 * (2*x - 1)^3 + x^2 + 2^x");
+
     let y: String = leer_valores();
     let mut f_x_h: f64;
     let mut f: f64;
@@ -43,7 +48,13 @@ fn main() {
         f_x_h = determinar_funcion(&y, &(x + H));
         f = determinar_funcion(&y, &x);
         f_prima = derivada_metodo_numerico(&f, &f_x_h);
-        metodo_newton(&mut x, &f, &f_prima);
+
+        if f.is_infinite() || f_prima == 0.into() {
+            println!("Error, f puede ser infinito o f' igual 0");
+            break;
+        }
+
+        x = metodo_newton(&x, &f, &f_prima);
 
         if cmp.eq(&x) {
             break;
